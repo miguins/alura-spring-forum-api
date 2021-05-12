@@ -24,7 +24,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 		// Permite apenas o métodos GET do controller de topicos
 		.antMatchers(HttpMethod.GET, "/topicos").permitAll()
-		.antMatchers(HttpMethod.GET, "/topicos/*").permitAll();
+		.antMatchers(HttpMethod.GET, "/topicos/*").permitAll()
+		.anyRequest().authenticated()
+		.and().formLogin();
 	}
 	
 	
