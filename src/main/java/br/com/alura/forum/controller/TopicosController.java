@@ -7,9 +7,9 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -71,6 +71,8 @@ public class TopicosController {
 	
 	@PostMapping
 	@Transactional
+	// CacheEvict limpa o cache de uma requisição específica ao realizar determinado método
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<TopicoDTO> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder) {
 		Topico topico = form.converter(cursoRepository);
 		topicoRepository.save(topico);
@@ -104,6 +106,7 @@ public class TopicosController {
 	
 	@PutMapping("/{id}")
 	@Transactional // Necessário para commitar a transação, mas também é uma boa prático colocar nos métodos POST e DELETE
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<TopicoDTO> atualizar(@RequestBody @Valid AtualizacaoTopicoForm form, @PathVariable Long id) {
 		
 		Optional<Topico> opt = topicoRepository.findById(id);
@@ -119,7 +122,8 @@ public class TopicosController {
 	
 	@DeleteMapping("/{id}")
 	@Transactional
-	public ResponseEntity<?> atualizar(@PathVariable Long id) {
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
+	public ResponseEntity<?> deletar(@PathVariable Long id) {
 		
 		Optional<Topico> topico = topicoRepository.findById(id);
 		
